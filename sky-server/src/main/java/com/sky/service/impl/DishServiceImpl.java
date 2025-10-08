@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -13,12 +14,17 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -87,7 +93,7 @@ public class DishServiceImpl implements DishService {
         //处于起售状态不能删除
         for(Long id:ids){
             Dish dish = dishMapper.getDishById(id);
-            if(dish.getStatus()==1){  //起售
+            if(dish.getStatus() == StatusConstant.ENABLE){  //起售
                 //抛出异常
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
@@ -102,11 +108,28 @@ public class DishServiceImpl implements DishService {
         }
         //删除菜品表中的菜品数据
         for (Long id : ids) {
-            dishMapper.deleteById(id);//后绪步骤实现
+            dishMapper.deleteById(id);
             //删除菜品关联的口味数据
-            dishFlavorMapper.deleteByDishId(id);//后绪步骤实现
+            dishFlavorMapper.deleteByDishId(id);
         }
-
-
     }
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getByIdWithFlavor(Long id) {
+        //根据id查询菜品数据
+        Dish dish = dishMapper.getDishById(id);
+        //根据菜品id查询口味数据
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getFlavorByDishId(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish,dishVO);
+        dishVO.setFlavors(dishFlavors);
+        return dishVO;
+    }
+
+
 }
