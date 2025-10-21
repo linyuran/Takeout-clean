@@ -60,8 +60,9 @@ public class DishServiceImpl implements DishService {
             for (DishFlavor flavor : flavors) {
                 flavor.setDishId(dishId);
             }
-        }
         dishFlavorMapper.insertBatch(flavors);
+        }
+
 
     }
 
@@ -179,6 +180,18 @@ public class DishServiceImpl implements DishService {
         }
         //封装到DishVO对象中
         return dishVOList;
+    }
+
+    /**
+     * 起售停售菜品
+     * @param status
+     * @param id
+     */
+    public void startOrStop(Integer status, Long id) {
+        Dish dish = new Dish();
+        dish.setId(id);
+        dish.setStatus(status);
+        dishMapper.update(dish);
     }
 
 }

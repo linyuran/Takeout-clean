@@ -10,10 +10,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜品管理
@@ -26,6 +28,8 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 新增菜品
@@ -37,6 +41,10 @@ public class DishController {
     public Result saveWithFlavor(@RequestBody DishDTO dishDTO){
         log.info("新增菜品{}:",dishDTO);
         dishService.save(dishDTO);
+
+        //清理缓存  精确删除
+        String  key = "dish_"+dishDTO.getCategoryId();
+        redisTemplate.delete(key);
         return Result.success();
     }
 
@@ -63,6 +71,11 @@ public class DishController {
     public Result delete(@RequestParam List<Long> ids) {
         log.info("菜品批量删除：{}", ids);
         dishService.deleteBatch(ids);
+
+        //清理缓存  由于传入的id很多，可能属于多个分类中，找到对应的分类再精确删除比较麻烦，所以将所有的缓存全部删除
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+
         return Result.success();
     }
 
@@ -88,6 +101,27 @@ public class DishController {
     @ApiOperation("修改菜品及口味信息")
     public Result update(@RequestBody DishDTO dishDTO){
         dishService.updateDishWithFlavor(dishDTO);
+        //删除所有的缓存
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+        return Result.success();
+    }
+
+    /**
+     * 菜品起售停售
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("菜品起售停售")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        dishService.startOrStop(status, id);
+
+        //将所有的菜品缓存数据清理掉，所有以dish_开头的key
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+
         return Result.success();
     }
 }
