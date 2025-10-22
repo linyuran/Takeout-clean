@@ -29,4 +29,11 @@ public interface SetmealService {
      * @param setmealDTO
      */
     void addWithDish(SetmealDTO setmealDTO);
+
+    /**
+     * 套餐分页查询
+     * @param setmealPageQueryDTO
+     * @return
+     */
+    PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 }
