@@ -64,12 +64,18 @@ public interface SetmealMapper {
      * @return
      */
     @Select("select * from setmeal where id = #{id}")
-    Setmeal getById(Integer id);
+    Setmeal getById(Long id);
 
     /**
      * 根据套餐id删除套餐数据
      * @param setmealId
      */
     @Delete("delete from setmeal where id = #{setmealId}")
-    void delete(Integer setmealId);
+    void delete(Long setmealId);
+
+    /**
+     * 动态更新套餐数据
+     */
+    @AutoFill(OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }
