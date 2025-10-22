@@ -23,6 +23,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 /**
@@ -95,5 +97,24 @@ public class SetmealServiceImpl implements SetmealService {
         pageResult.setTotal(list.getTotal());
         pageResult.setRecords(list);
         return pageResult;
+    }
+
+    /**
+     * 根据套餐id删除套餐
+     * @param ids
+     */
+    public void delete(List<Integer> ids) {
+        for (Integer id :ids){
+            //根据套餐id得到套餐
+            Setmeal setmeal = setmealMapper.getById(id);
+            if(setmeal.getStatus() == StatusConstant.ENABLE){
+                throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ON_SALE);
+            }
+            //在停售状态
+            //删除套餐
+            setmealMapper.delete(id);
+            //删除套餐相关联的菜品
+            setmealDishMapper.deleteWithDish(id);
+        }
     }
 }

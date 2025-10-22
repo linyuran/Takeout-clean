@@ -11,6 +11,7 @@ import com.sky.vo.SetmealVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,12 +44,18 @@ public class SetmealController {
         return Result.success(pageResult);
     }
 
-
     // 删除套餐
-
+    @DeleteMapping
+    @ApiOperation("删除套餐")
+    public Result delete(@RequestParam List<Integer> ids){
+        setmealService.delete(ids);
+    return Result.success();
+    }
 
     // 修改套餐
-
+//    public Result update() {
+//
+//    }
 
     // 起售停售套餐
 }
