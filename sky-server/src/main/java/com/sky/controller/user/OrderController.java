@@ -67,17 +67,17 @@ public class OrderController {
 
     }
 
-//    /**
-//     * 查询订单详情
-//     * @param id
-//     * @return
-//     */
-//    @GetMapping("/orderDetail/{id}")
-//    @ApiOperation("查询订单详情")
-//    public Result<OrderVO> details(@PathVariable("id") Long id) {
-//        OrderVO orderVO = orderService.details(id);
-//        return Result.success(orderVO);
-//    }
+    /**
+     * 查询订单详情
+     * @param id
+     * @return
+     */
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("查询订单详情")
+    public Result<OrderVO> details(@PathVariable Long id) {
+        OrderVO orderVO = orderService.details(id);
+        return Result.success(orderVO);
+    }
 
 
 }
