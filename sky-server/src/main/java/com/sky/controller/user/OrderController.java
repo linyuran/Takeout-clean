@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
@@ -55,5 +56,28 @@ public class OrderController {
         log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
     }
+
+    //历史订单查询
+    //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+    @GetMapping("/historyOrders")
+    @ApiOperation("历史订单查询")
+    public Result<PageResult> historyOrderList(Integer page, Integer pageSize, Integer status){
+        PageResult pageResult = orderService.historyOrderList(page,pageSize,status);
+        return Result.success(pageResult);
+
+    }
+
+//    /**
+//     * 查询订单详情
+//     * @param id
+//     * @return
+//     */
+//    @GetMapping("/orderDetail/{id}")
+//    @ApiOperation("查询订单详情")
+//    public Result<OrderVO> details(@PathVariable("id") Long id) {
+//        OrderVO orderVO = orderService.details(id);
+//        return Result.success(orderVO);
+//    }
+
 
 }
