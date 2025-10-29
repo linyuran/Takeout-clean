@@ -287,4 +287,59 @@ public class OrderServiceImpl implements OrderService {
         }
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
+
+    /**
+     * 订单搜索
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
+
+        Page<Orders> orders = orderMapper.pageQuery(ordersPageQueryDTO);
+        PageResult pageResult = new PageResult();
+        pageResult.setTotal(orders.getTotal());
+
+        //返回结果中还需要返回订单菜品信息
+        //待接单和待配送和配送中需要展示菜品信息，已完成和已取消不需要
+        /**
+         * OrderVO extends Orders  继承了订单的所有属性，且增加了订单详情和菜品信息描述字符串
+         */
+        List<OrderVO> orderVOList = new ArrayList<>();
+        for(Orders o:orders){
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(o,orderVO);
+            //得到订单菜品信息
+            String str = getOrderDishes(o);
+            orderVO.setOrderDishes(str);
+            orderVOList.add(orderVO);
+        }
+        pageResult.setRecords(orderVOList);
+        return pageResult;
+    }
+
+    /**
+     * 根据订单id得到订单菜品信息
+     * @param orders
+     * @return
+     */
+    private String getOrderDishes(Orders orders) {
+        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orders.getId());
+
+        StringBuilder sb = new StringBuilder();
+        for (OrderDetail orderDetail : orderDetails) {
+            // 格式：菜品名称*数量；
+            sb.append(orderDetail.getName())
+                    .append("*")
+                    .append(orderDetail.getNumber())
+                    .append(";");
+        }
+
+        // 去除最后一个分号（如果列表不为空）
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
+    }
 }
