@@ -266,5 +266,22 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    /**
+     * 再来一单   将订单数据重新加入到购物车中
+     * @param id  订单id
+     */
+    public void repetition(Long id) {
 
+        //查询订单
+        Orders orders = orderMapper.getById(id);
+        //查询订单明细
+        List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(id);
+        List<ShoppingCart> shoppingCartList = new ArrayList<>();
+        for(OrderDetail od : orderDetails){
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(od,shoppingCart);
+            shoppingCartList.add(shoppingCart);
+        }
+        shoppingCartMapper.insertBatch(shoppingCartList);
+    }
 }
