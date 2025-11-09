@@ -77,4 +77,10 @@ public interface OrderMapper {
      * @return
      */
     Integer countByMap(Map map);
+
+    /**
+     *根据动态条件统计订单数量
+     * @param map
+     */
+    Integer OrdercountByMap(Map map);
 }
