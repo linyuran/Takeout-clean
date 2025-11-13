@@ -77,13 +77,13 @@ public interface OrderMapper {
      * @param map
      * @return
      */
-    Integer countByMap(Map map);
+    //Integer countByMap(Map map);
 
     /**
      *根据动态条件统计订单数量
      * @param map
      */
-    Integer OrdercountByMap(Map map);
+    Integer countByMap(Map map);
 
     /**
      * 查询指定时间区间内的销量排名top10

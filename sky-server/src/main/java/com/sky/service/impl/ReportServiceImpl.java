@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
 import com.sky.vo.SalesTop10ReportVO;
@@ -29,6 +30,8 @@ import java.util.stream.Collectors;
 public class ReportServiceImpl implements ReportService {
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 营业额数据统计
@@ -95,11 +98,11 @@ public class ReportServiceImpl implements ReportService {
             //select count(id) where order_time > begin and order_time <end
             Map map = new HashMap();
             map.put("end",endTime);
-            Integer totalUser = orderMapper.countByMap(map);
+            Integer totalUser = userMapper.countByMap(map);
             totalUserList.add(totalUser);
 
             map.put("begin",beginTime);
-            Integer newUser = orderMapper.countByMap(map);
+            Integer newUser = userMapper.countByMap(map);
             newUserList.add(newUser);
         }
 
@@ -180,7 +183,7 @@ public class ReportServiceImpl implements ReportService {
         map.put("status", status);
         map.put("begin",beginTime);
         map.put("end", endTime);
-        return orderMapper.OrdercountByMap(map);
+        return orderMapper.countByMap(map);
     }
 
     /**
